@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Malzz Crash - Advanced WhatsApp Bug Tool</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap');
+        
+        :root {
+            --primary: #6e00ff;
+            --secondary: #ff00a0;
+            --dark: #0f051d;
+            --light: #f0f0f0;
+            --accent: #00f7ff;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--dark);
+            color: var(--light);
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(110, 0, 255, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 30%, rgba(255, 0, 160, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 50% 80%, rgba(0, 247, 255, 0.1) 0%, transparent 20%);
+        }
+        
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration, 5s) infinite ease-in-out;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+        
+        .loading-gate {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--dark);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 1s ease-out;
+        }
+        
+        .loading-gate h1 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent);
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px var(--accent);
+            font-size: 2.5rem;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .loader {
+            width: 80px;
+            height: 80px;
+            border: 5px solid transparent;
+            border-top-color: var(--primary);
+            border-bottom-color: var(--secondary);
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .login-container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 30px;
+            background: rgba(15, 5, 29, 0.8);
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(110, 0, 255, 0.3);
+            border: 1px solid var(--primary);
+            backdrop-filter: blur(10px);
+            display: none;
+        }
+        
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: var(--accent);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--light);
+            font-weight: bold;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            color: var(--light);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 10px rgba(0, 247, 255, 0.5);
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        .login-btn:hover {
+            background: linear-gradient(45deg, var(--secondary), var(--primary));
+            box-shadow: 0 0 15px rgba(255, 0, 160, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            display: none;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(110, 0, 255, 0.5);
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            color: var(--accent);
+            font-weight: bold;
+        }
+        
+        .tool-card {
+            background: rgba(15, 5, 29, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid var(--primary);
+            box-shadow: 0 0 20px rgba(110, 0, 255, 0.2);
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+        }
+        
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 30px rgba(255, 0, 160, 0.3);
+            border-color: var(--secondary);
+        }
+        
+        .tool-card h2 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent);
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .tool-card h2::before {
+            content: "◆";
+            color: var(--secondary);
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .tool-card p {
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .target-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .target-input input {
+            flex: 1;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            color: var(--light);
+            font-size: 1rem;
+        }
+        
+        .target-input input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 10px rgba(0, 247, 255, 0.5);
+        }
+        
+        .execute-btn {
+            padding: 12px 25px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+        }
+        
+        .execute-btn:hover {
+            background: linear-gradient(45deg, var(--secondary), var(--primary));
+            box-shadow: 0 0 15px rgba(255, 0, 160, 0.5);
+        }
+        
+        .admin-link {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 15px;
+            border-radius: 30px;
+            color: var(--light);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+            border: 1px solid var(--primary);
+        }
+        
+        .admin-link:hover {
+            background: rgba(255, 0, 160, 0.2);
+            color: var(--accent);
+        }
+        
+        .admin-panel {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 5, 29, 0.95);
+            z-index: 1001;
+            padding: 30px;
+            overflow-y: auto;
+        }
+        
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--primary);
+        }
+        
+        .admin-header h2 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent);
+            font-size: 2rem;
+        }
+        
+        .close-admin {
+            background: var(--secondary);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .user-management {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .user-management h3 {
+            color: var(--accent);
+            margin-bottom: 15px;
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        .user-list {
+            list-style: none;
+        }
+        
+        .user-list li {
+            padding: 10px;
+            border-bottom: 1px solid rgba(110, 0, 255, 0.3);
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .add-user-form {
+            margin-top: 20px;
+        }
+        
+        .add-user-form input {
+            padding: 8px 12px;
+            margin-right: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 5px;
+            color: var(--light);
+        }
+        
+        .add-user-btn {
+            padding: 8px 15px;
+            background: var(--primary);
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+        
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .tool-card h2 {
+                font-size: 1.5rem;
+            }
+            
+            .target-input {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+    
+    <!-- Loading Gate -->
+    <div class="loading-gate" id="loadingGate">
+        <h1>MALZZ CRASH</h1>
+        <div class="loader"></div>
+        <p>Loading advanced WhatsApp bug tools...</p>
+    </div>
+    
+    <!-- Login Form -->
+    <div class="login-container" id="loginContainer">
+        <h2>ACCESS MALZZ CRASH</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" placeholder="Enter your username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter your password" required>
+            </div>
+            <button type="submit" class="login-btn">Login</button>
+        </form>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="container" id="mainContainer">
+        <header>
+            <h1>Malzz Crash</h1>
+            <p>Advanced WhatsApp Bug Tool</p>
+        </header>
+        
+        <div class="tool-card">
+            <h2>Bug Delay Hard</h2>
+            <p>DELAY HARD BRO JAMIN C1</p>
+            <div class="target-input">
+                <input type="text" id="delayHardTarget" placeholder="NOMOR TARGETNYA MANA">
+                <button class="execute-btn" onclick="executeTool('delayHard')">Execute</button>
+            </div>
+        </div>
+        
+        <div class="tool-card">
+            <h2>Bug Delay Invis</h2>
+            <p>BUG DELAY INVISIBLE BROK JAMIN C1</p>
+            <div class="target-input">
+                <input type="text" id="delayInvisTarget" placeholder="NOMOR TARGET NYA MANA">
+                <button class="execute-btn" onclick="executeTool('delayInvis')">Execute</button>
+            </div>
+        </div>
+        
+        <div class="tool-card">
+            <h2>Bulldozer</h2>
+            <p>SEDOT KOUTA TARGET</p></p>
+            <div class="target-input">
+                <input type="text" id="bulldozerTarget" placeholder="NOMOR TARGET NYA MANA">
+                <button class="execute-btn" onclick="executeTool('bulldozer')">Execute</button>
+            </div>
+        </div>
+        
+        <a href="#" class="admin-link" id="adminLink">admin malzz</a>
+    </div>
+    
+    <!-- Admin Panel -->
+    <div class="admin-panel" id="adminPanel">
+        <div class="admin-header">
+            <h2>Admin Dashboard</h2>
+            <button class="close-admin" id="closeAdmin">Close</button>
+        </div>
+        
+        <div class="user-management">
+            <h3>User Management</h3>
+            <ul class="user-list" id="userList">
+                <!-- Users will be added here dynamically -->
+            </ul>
+            
+            <div class="add-user-form">
+                <input type="text" id="newUsername" placeholder="New username">
+                <input type="password" id="newPassword" placeholder="New password">
+                <button class="add-user-btn" id="addUserBtn">Add User</button>
+            </div>
+        </div>
+    </div>
+    
+    <audio id="bgAudio" loop>
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-sci-fi-ambience-222.mp3" type="audio/mpeg">
+    </audio>
+    
+    <script>
+        // Create stars background
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const starsCount = 200;
+            
+            for (let i = 0; i < starsCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                
+                // Random size between 1px and 3px
+                const size = Math.random() * 2 + 1;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                
+                // Random position
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                
+                // Random animation duration
+                star.style.setProperty('--duration', `${Math.random() * 5 + 3}s`);
+                
+                starsContainer.appendChild(star);
+            }
+        }
+        
+        // Simulate loading
+        window.addEventListener('DOMContentLoaded', () => {
+            createStars();
+            
+            // Play background audio
+            const audio = document.getElementById('bgAudio');
+            audio.volume = 0.3;
+            
+            // Check if user is already logged in
+            const isLoggedIn = localStorage.getItem('malzzCrashLoggedIn') === 'true';
+            
+            setTimeout(() => {
+                document.getElementById('loadingGate').style.opacity = '0';
+                
+                setTimeout(() => {
+                    document.getElementById('loadingGate').style.display = 'none';
+                    
+                    if (isLoggedIn) {
+                        document.getElementById('mainContainer').style.display = 'block';
+                        audio.play();
+                    } else {
+                        document.getElementById('loginContainer').style.display = 'block';
+                        audio.play();
+                    }
+                }, 1000);
+            }, 3000);
+        });
+        
+        // Login functionality
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // In a real application, you would verify credentials with a server
+            // For this demo, we'll use hardcoded credentials
+            const validUsers = [
+                { username: 'admin', password: 'admin123' },
+                { username: 'user1', password: 'pass123' }
+            ];
+            
+            const isValid = validUsers.some(user => 
+                user.username === username && user.password === password
+            );
+            
+            if (isValid) {
+                localStorage.setItem('malzzCrashLoggedIn', 'true');
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('mainContainer').style.display = 'block';
+            } else {
+                alert('Invalid username or password');
+            }
+        });
+        
+        // Tool execution
+        function executeTool(tool) {
+            let targetInput;
+            
+            switch (tool) {
+                case 'delayHard':
+                    targetInput = document.getElementById('delayHardTarget').value;
+                    break;
+                case 'delayInvis':
+                    targetInput = document.getElementById('delayInvisTarget').value;
+                    break;
+                case 'bulldozer':
+                    targetInput = document.getElementById('bulldozerTarget').value;
+                    break;
+            }
+            
+            if (!targetInput) {
+                alert('Please enter a target phone number');
+                return;
+            }
+            
+            // In a real application, this would send a request to your server
+            alert(`Executing ${tool} on target: ${targetInput}\n\nThis is a demo. In a real application, this would connect to your backend service.`);
+        }
+        
+        // Admin panel functionality
+        document.getElementById('adminLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('adminPanel').style.display = 'block';
+        });
+        
+        document.getElementById('closeAdmin').addEventListener('click', () => {
+            document.getElementById('adminPanel').style.display = 'none';
+        });
+        
+        // Demo user management
+        document.getElementById('addUserBtn').addEventListener('click', () => {
+            const username = document.getElementById('newUsername').value;
+            const password = document.getElementById('newPassword').value;
+            
+            if (!username || !password) {
+                alert('Please enter both username and password');
+                return;
+            }
+            
+            const userList = document.getElementById('userList');
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <span>${username}</span>
+                <span>••••••••</span>
+            `;
+            userList.appendChild(li);
+            
+            document.getElementById('newUsername').value = '';
+            document.getElementById('newPassword').value = '';
+            
+            alert('User added successfully (demo only - not saved to database)');
+        });
+        
+        // Initialize with some demo users
+        window.addEventListener('load', () => {
+            const demoUsers = ['admin', 'user1', 'moderator'];
+            const userList = document.getElementById('userList');
+            
+            demoUsers.forEach(user => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>${user}</span>
+                    <span>••••••••</span>
+                `;
+                userList.appendChild(li);
+            });
+        });
+    </script>
+</body>
+</html>
